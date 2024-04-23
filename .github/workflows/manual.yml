@@ -1,0 +1,36 @@
+# This is a basic workflow that is manually triggered
+
+name: Manual workflow
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:  workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}      
+      - name: Set up Python
+        # This is the version of the action for setting up Python, not the Python version.
+        uses: actions/setup-python@v4
+      # You can test your matrix by printing the current Python version
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Run TM script
+        run: python gettmdata.py 
+        env:
+          TM_USER: ${{secrets.TM_USER}}   
+          TM_PASS: ${{secrets.TM_PASS}}
+      - name: Commit report
+        run: |
+          git config --global user.name "nheryvra"
+          git config --global user.email "155557051+nheryvra@users.noreply.github.com"
+          git commit -am "Automated report"
+          git push          
+
+      
