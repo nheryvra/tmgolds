@@ -3,6 +3,7 @@ import base64
 import time
 import json
 import os
+from datetime import datetime
 
 username = os.environ['TM_USER']
 password = os.environ['TM_PASS']
@@ -50,6 +51,15 @@ def get_camp_uids(resp):
 
     return uids
 
+
+def get_month_uids(month):
+    uids = {}
+
+    for day in month['days']:
+        if day['mapUid'] != '':
+            uids[day['monthDay']] = day['mapUid']
+
+    return uids
 
 
 def get_maps_info(uids):
@@ -111,10 +121,9 @@ def augment_with_pos(mapinfos, positions, gold=True):
     return mapinfos
 
 
-def trackmania_full_info(endpoint, get_uids):
+def trackmania_full_info(month):
 
-    totd_resp = requests.get(endpoint, headers=auth_header)
-    totd_uids = get_uids(totd_resp)
+    totd_uids = get_month_uids(month)
     print(totd_uids)
     totd_info = get_maps_info(totd_uids)
     print(totd_info)
@@ -133,10 +142,53 @@ def trackmania_full_info(endpoint, get_uids):
     return totd_info
 
 
-totd_info = trackmania_full_info(totd_endpoint, get_totd_uids)
-# camp_info = trackmania_full_info(camp_endpoint, get_camp_uids)
+def get_old_data():
+
+    with open('tmdata.js', 'r') as f:
+        all_info_txt = f.read()
+
+    all_info_json = all_info_txt.replace("var totd_full_info = ", "")
+
+    return json.loads(all_info_json)
 
 
-with open("tmdata.js", "w") as f:
-    f.write("var totd_info = " + json.dumps(totd_info) + ";\n")
-    # f.write("var camp_info = " + json.dumps(camp_info) + ";\n")
+if __name__ == "__main__":
+
+    current_month = datetime.now().month
+    old_data = get_old_data()
+
+
+    totd_resp = requests.get("https://live-services.trackmania.nadeo.live/api/token/campaign/month?offset=0&length=3&royal=0", headers=auth_header)
+
+
+    old_months = []
+
+    for month in totd_resp.json()['monthList']:
+        if month['month'] == current_month:
+            to_refresh = month
+        else:
+            old_months.append(month)
+
+
+    new_data = []
+
+    refreshed_current_month = trackmania_full_info(to_refresh)
+
+    new_data.append({"month": to_refresh['month'], "year": to_refresh['year'], "maps": refreshed_current_month})
+
+    for month in old_months:
+        found = False
+        for info in old_data:
+            if month['month'] == info['month'] and month['year'] == info['year']:
+                print("Using old data for month", month['month'])
+                found = True
+                new_data.append( info )
+
+        if not found:
+            print("getting api data for month", month['month'] )
+            refreshed_month = trackmania_full_info(month)
+            new_data.append({"month": month['month'], "year": month['year'], "maps": refreshed_month})
+
+
+    with open("tmdata.js", "w") as f:
+        f.write("var totd_full_info = " + json.dumps(new_data))

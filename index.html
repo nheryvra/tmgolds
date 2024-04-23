@@ -28,20 +28,9 @@
     </head>
     <body>
         <br />
-        <h2 style="text-align: center;">TOTD</h2>
-        <br />
-        <table class="tmtable table table-striped table-dark table-hover" >
-            <thead>
-                <th>day</th>
-                <th style="text-align: left;">map</th>
-                <th>gold time</th>
-                <th>gold rank</th>
-                <th>players</th>
-                <th>gold ratio</th>
-            </thead>
-            <tbody id="totd_tbody"></tbody>
-        </table>
+        <div id="tables">
 
+        </div>
         <!-- <br />
         <h2 style="text-align: center;">Campaign</h2>
         <br />
@@ -82,7 +71,35 @@
 
         }
 
-        fillTable(document.getElementById("totd_tbody"), totd_info);
+        var divtables = document.getElementById("tables");
+
+        for (month of totd_full_info) {
+
+            var table = document.createElement("div");
+            var monthyear = `${month['year']}-${month['month']}` ;
+            table.innerHTML = `
+            <br />
+            <h2 style="text-align: center;">TOTD ${monthyear}</h2>
+            <br />
+            <table class="tmtable table table-striped table-dark table-hover" >
+                <thead>
+                    <th>day</th>
+                    <th style="text-align: left;">map</th>
+                    <th>gold time</th>
+                    <th>gold rank</th>
+                    <th>players</th>
+                    <th>gold ratio</th>
+                </thead>
+                <tbody id="totd_tbody_${monthyear}"></tbody>
+            </table>
+            `
+            divtables.appendChild(table);
+
+            fillTable(document.getElementById("totd_tbody_"+monthyear), month['maps']);
+
+        }
+        // var table_0 = document.
+        // fillTable(document.getElementById("totd_tbody"), totd_full_info[0]['maps']);
         // fillTable(document.getElementById("camp_tbody"), camp_info);
 
 
