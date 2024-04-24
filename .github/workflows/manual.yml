@@ -7,7 +7,8 @@ name: Manual workflow
 on:  
   workflow_dispatch:
   schedule:
-    - cron:  '54 12,17,18,22,23 * * *'  
+    - cron:  '54 17,18,22,23 * * *'  
+    - cron:  '07 12 * * *'  
   
   
 jobs:
