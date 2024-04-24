@@ -2,7 +2,7 @@ name: Update TM data
 
 on:
   schedule:
-    - cron:  '48 * * * *'
+    - cron:  '9 * * * *'
 
 
 jobs:
