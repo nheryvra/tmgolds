@@ -23,6 +23,10 @@
                 margin-right: auto;
                 font-size: 18px;
             }
+            td > a:link {
+                color:inherit;
+                text-decoration: inherit;
+            }
         </style>
 
     </head>
@@ -65,7 +69,7 @@
                 let ratio_f = parseInt(100*info['goldPosition']/info['lastPosition'])+"&nbsp;%";
                 let ratio_col = getColor(info['goldPosition']/info['lastPosition']) ;
                 let ratio_td = "<td style='color: " + ratio_col + "'>" + ratio_f + "</td>";
-                tr.innerHTML = `<td>${d}</td><td style='text-align: left;'>${img_f}${name_f}</td><td>${time_f}</td><td>${info['goldPosition']}</td><td>${info['lastPosition']}</td>${ratio_td}`
+                tr.innerHTML = `<td>${d}</td><td style='text-align: left;'><a href="https://trackmania.com/tracks/${info['uid']}" target="_blank">${img_f}${name_f}</a></td><td>${time_f}</td><td>${info['goldPosition']}</td><td>${info['lastPosition']}</td>${ratio_td}`
                 tbody.appendChild(tr);
             }
 
