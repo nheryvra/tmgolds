@@ -3,6 +3,8 @@ import base64
 import time
 import json
 import os
+import sys
+import pprint
 from datetime import datetime
 
 username = os.environ['TM_USER']
@@ -122,11 +124,15 @@ def augment_with_pos(mapinfos, positions, gold=True):
 
     return mapinfos
 
+def add_gold_ratios(totd_info):
+    for d, map in totd_info.items():
+        if "goldPosition" in map and "lastPosition" in map:
+            totd_info[d]["goldRatio"] = round(100*map["goldPosition"] / map['lastPosition'], 2)
 
-def trackmania_full_info(month):
+    return totd_info
 
-    totd_uids = get_month_uids(month)
-    print(totd_uids)
+def get_maps_info_from_uids(totd_uids):
+
     totd_info = get_maps_info(totd_uids)
     print(totd_info)
 
@@ -139,9 +145,17 @@ def trackmania_full_info(month):
     print(totd_lastpos)
 
     totd_info = augment_with_pos(totd_info, totd_lastpos, gold=False )
+
+    totd_info = add_gold_ratios(totd_info)
     print(totd_info)
 
     return totd_info
+
+def trackmania_full_info(month):
+
+    totd_uids = get_month_uids(month)
+    print(totd_uids)
+    return get_maps_info_from_uids(totd_uids)
 
 
 def get_old_data():
@@ -155,6 +169,16 @@ def get_old_data():
 
 
 if __name__ == "__main__":
+
+
+    if len(sys.argv) > 1:
+        uids = { i : sys.argv[i] for i in range(1, len(sys.argv)) }
+        print(uids)
+        maps_infos = get_maps_info_from_uids(uids)
+        pprint.pprint(maps_infos)
+        pprint.pprint({ m['name'] : m['goldRatio'] for d, m in maps_infos.items()})
+        exit(0)
+
 
     current_month = datetime.now().month
     old_data = get_old_data()
