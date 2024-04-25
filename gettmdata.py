@@ -26,11 +26,13 @@ else:
 
 auth_header = { 'Authorization': "nadeo_v1 t=%s" % accessToken }
 
-
-totd_endpoint = "https://live-services.trackmania.nadeo.live/api/token/campaign/month?offset=0&length=1&royal=0"
+months_of_backlog = 4
+totd_endpoint = f"https://live-services.trackmania.nadeo.live/api/token/campaign/month?offset=0&length={months_of_backlog}&royal=0"
 mapinfo_endpoint = "https://live-services.trackmania.nadeo.live/api/token/map/"
-camp_endpoint = " https://live-services.trackmania.nadeo.live/api/token/campaign/official?offset=0&length=1"
 
+# camp_endpoint = " https://live-services.trackmania.nadeo.live/api/token/campaign/official?offset=0&length=1"
+
+scores_endpoint = "https://live-services.trackmania.nadeo.live/api/token/leaderboard/group/map?"
 
 
 def get_totd_uids(resp):
@@ -98,7 +100,7 @@ def get_score_positions(mapinfos, gold=True):
 
     body = { "maps": body_maps }
 
-    endpoint = "https://live-services.trackmania.nadeo.live/api/token/leaderboard/group/map?" + scores_query
+    endpoint = scores_endpoint + scores_query
 
     resp = requests.post(endpoint, headers=auth_header, json=body)
     if resp.status_code == 200:
@@ -158,7 +160,7 @@ if __name__ == "__main__":
     old_data = get_old_data()
 
 
-    totd_resp = requests.get("https://live-services.trackmania.nadeo.live/api/token/campaign/month?offset=0&length=3&royal=0", headers=auth_header)
+    totd_resp = requests.get(totd_endpoint, headers=auth_header)
 
 
     old_months = []
