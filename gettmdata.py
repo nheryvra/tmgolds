@@ -6,6 +6,7 @@ import os
 import sys
 import pprint
 from datetime import datetime
+import zoneinfo
 
 username = os.environ['TM_USER']
 password = os.environ['TM_PASS']
@@ -26,9 +27,9 @@ else:
     exit(1)
 
 
-auth_header = { 'Authorization': "nadeo_v1 t=%s" % accessToken }
+auth_header = { 'Authorization': "nadeo_v1 t=%s" % accessToken, 'User-Agent': 'https://nheryvra.github.io/tmgolds Estimating TOTD gold medals difficulty' }
 
-months_of_backlog = 4
+months_of_backlog = 12
 totd_endpoint = f"https://live-services.trackmania.nadeo.live/api/token/campaign/month?offset=0&length={months_of_backlog}&royal=0"
 mapinfo_endpoint = "https://live-services.trackmania.nadeo.live/api/token/map/"
 
@@ -200,7 +201,9 @@ if __name__ == "__main__":
 
     refreshed_current_month = trackmania_full_info(to_refresh)
 
-    new_data.append({"month": to_refresh['month'], "year": to_refresh['year'], "maps": refreshed_current_month})
+    timestamp = datetime.now(zoneinfo.ZoneInfo('CET')).strftime("%Y-%m-%d %H:%M %Z")
+
+    new_data.append({"month": to_refresh['month'], "year": to_refresh['year'], 'updated_on': timestamp, "maps": refreshed_current_month})
 
     for month in old_months:
         found = False
@@ -213,7 +216,8 @@ if __name__ == "__main__":
         if not found:
             print("getting api data for month", month['month'] )
             refreshed_month = trackmania_full_info(month)
-            new_data.append({"month": month['month'], "year": month['year'], "maps": refreshed_month})
+            timestamp = datetime.now(zoneinfo.ZoneInfo('CET')).strftime("%Y-%m-%d %H:%M %Z")
+            new_data.append({"month": month['month'], "year": month['year'], 'updated_on': timestamp, "maps": refreshed_month})
 
 
     with open("tmdata.js", "w") as f:
