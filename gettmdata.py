@@ -5,7 +5,7 @@ import json
 import os
 import sys
 import pprint
-from datetime import datetime
+from datetime import datetime, timedelta
 import zoneinfo
 
 username = os.environ['TM_USER']
@@ -161,12 +161,16 @@ def trackmania_full_info(month):
 
 def get_old_data():
 
-    with open('tmdata.js', 'r') as f:
-        all_info_txt = f.read()
+    try:
+        with open('tmdata.js', 'r') as f:
+            all_info_txt = f.read()
 
-    all_info_json = all_info_txt.replace("var totd_full_info = ", "")
+        all_info_json = all_info_txt.replace("var totd_full_info = ", "")
 
-    return json.loads(all_info_json)
+        return json.loads(all_info_json)
+    except Exception as e:
+        print(e)
+        return []
 
 
 if __name__ == "__main__":
@@ -182,6 +186,9 @@ if __name__ == "__main__":
 
 
     current_month = datetime.now().month
+    current_day = datetime.now().day
+    previous_month = (datetime.now() - timedelta(days=28)).month
+
     old_data = get_old_data()
 
 
@@ -207,11 +214,12 @@ if __name__ == "__main__":
 
     for month in old_months:
         found = False
-        for info in old_data:
-            if month['month'] == info['month'] and month['year'] == info['year']:
-                print("Using old data for month", month['month'])
-                found = True
-                new_data.append( info )
+        if current_day > 7 or month['month'] != previous_month:      # refresh previous month for the first week of the current month
+            for info in old_data:
+                if month['month'] == info['month'] and month['year'] == info['year']:
+                    print("Using old data for month", month['month'])
+                    found = True
+                    new_data.append( info )
 
         if not found:
             print("getting api data for month", month['month'] )
