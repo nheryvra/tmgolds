@@ -21,7 +21,8 @@ jobs:
         run: |
           git config --global user.name "nheryvra"
           git config --global user.email "155557051+nheryvra@users.noreply.github.com"
-          git merge  -X theirs origin/master
+          git fetch
+          git merge --no-edit -X theirs origin/main
       - name: Set up Python
         # This is the version of the action for setting up Python, not the Python version.
         uses: actions/setup-python@v4
