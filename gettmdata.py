@@ -208,7 +208,7 @@ if __name__ == "__main__":
 
     refreshed_current_month = trackmania_full_info(to_refresh)
 
-    timestamp = datetime.now(zoneinfo.ZoneInfo('CET')).strftime("%Y-%m-%d %H:%M %Z")
+    timestamp = datetime.now(zoneinfo.ZoneInfo('Europe/Paris')).strftime("%Y-%m-%d %H:%M %Z")
 
     new_data.append({"month": to_refresh['month'], "year": to_refresh['year'], 'updated_on': timestamp, "maps": refreshed_current_month})
 
@@ -224,7 +224,7 @@ if __name__ == "__main__":
         if not found:
             print("getting api data for month", month['month'] )
             refreshed_month = trackmania_full_info(month)
-            timestamp = datetime.now(zoneinfo.ZoneInfo('CET')).strftime("%Y-%m-%d %H:%M %Z")
+            timestamp = datetime.now(zoneinfo.ZoneInfo('Europe/Paris')).strftime("%Y-%m-%d %H:%M %Z")
             new_data.append({"month": month['month'], "year": month['year'], 'updated_on': timestamp, "maps": refreshed_month})
 
 
